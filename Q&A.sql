@@ -35,8 +35,6 @@ from
    
 
 
-
-
  not done /* 21. From the following tables write a query in SQL to retrieve the salesperson for each PostalCode who belongs to a territory and SalesYTD is not zero.
 Return row numbers of each group of PostalCode, last name, salesytd, postalcode column. 
 Sort the salesytd of each postalcode group in descending order. Shorts the postalcode in ascending order.
@@ -56,10 +54,6 @@ from
 join Person.Person p
      on s.
 	    
-
-
-
-
 
 
 /* 22. From the following table write a query in SQL to count the number of contacts for combination of each type and name. 
@@ -104,8 +98,6 @@ from
 join HumanResources.EmployeePayHistory e
      on p.BusinessEntityID = e.BusinessEntityID
 order by fullname
-
-
 
 
 
@@ -157,9 +149,15 @@ from
      person.Person  p 
 join HumanResources.EmployeePayHistory e
      on p.BusinessEntityID = e.BusinessEntityID
-	 where RateChangeDate=
-	 (select max(ratechangedate) from HumanResources.EmployeePayHistory WHERE BusinessEntityID = e.BusinessEntityID)
+where RateChangeDate=
+	   (select 
+	        max(ratechangedate) 
+ from 
+	      HumanResources.EmployeePayHistory 
+	   WHERE
+	      BusinessEntityID = e.BusinessEntityID)
 order by fullname
+
 
 /*
 25. From the following table write a query in SQL to 
@@ -172,8 +170,158 @@ Return SalesOrderID, ProductID, OrderQty, sum, average, count, max, and min orde
 select 
      SalesOrderID,
 	 ProductID,
-	 OrderQty
+	 OrderQty,
+	 count(orderqty) cnt,
+	sum(orderqty) summ,
+	 Avg(orderqty)avgg,
+	 min(orderqty) minn,
+	 max(orderqty) maxx
 from 
     Sales.SalesOrderDetail
-	where SalesOrderID in (43659,43664)
+where 
+   SalesOrderID in (43659,43664)
+group by 
+      SalesOrderID,
+	  ProductID,
+	  OrderQty
  
+
+ not done  /*
+ 26. From the following table write a query in SQL to find the sum, average, and number of order quantity for those orders 
+ whose ids are 43659 and 43664 and product id starting with '71'.
+ Return SalesOrderID, OrderNumber,ProductID, OrderQty, sum, average, and number of order quantity.
+
+*/
+--Sample table: Sales.SalesOrderDetail
+
+select 
+     SalesOrderID,
+	-- OrderNumber,
+	 ProductID,
+	 OrderQty,
+	 count(orderqty) cnt,
+	sum(orderqty) summ,
+	 Avg(orderqty)avgg,
+	 min(orderqty) minn,
+	 max(orderqty) maxx
+from 
+    Sales.SalesOrderDetail
+where 
+     SalesOrderID in (43659,43664) and productId LIKE '71%'
+group by 
+      SalesOrderID,
+	 -- OrderNumber,
+	  ProductID,
+	  OrderQty
+
+
+/*  
+27. From the following table write a query in SQL to retrieve the total cost of each salesorderID that exceeds 100000.
+Return SalesOrderID, total cost.
+*/
+--select * from  Sales.SalesOrderDetail
+
+select 
+    salesorderid,
+	sum(linetotal) as Tol
+from 
+   Sales.SalesOrderDetail
+group by 
+      SalesOrderID
+having sum(linetotal) > 100000
+
+
+/*
+28. From the following table write a query in SQL to retrieve products whose names start with 'Lock Washer'.
+Return product ID, and name and order the result set in ascending order on product ID column.
+*/
+
+--select * from Production.Product 
+
+select 
+    productid,
+    [name]
+from 
+   Production.Product
+where 
+   [name] like 'Lock Washer%'
+order by 
+    productid
+
+/*
+29. Write a query in SQL to fetch rows from product table and order the result set on an unspecified column listprice. 
+Return product ID, name, and color of the product.
+*/
+--select * from  Production.Product
+
+	select 
+	    productid,
+		[name],
+		color
+	from 
+	   Production.Product
+	order by 
+	      listprice 
+
+ /*
+ 30. From the following table write a query in SQL to retrieve records of employees. 
+ Order the output on year (default ascending order) of hiredate. 
+ Return BusinessEntityID, JobTitle, and HireDate.
+*/
+-- select * from HumanResources.Employee
+
+select 
+    Businessentityid,
+	jobtitle,
+	hiredate
+from 
+	HumanResources.Employee
+order by 
+     year(hiredate)
+
+ /*
+31. From the following table write a query in SQL to retrieve those persons whose last name begins with letter 'R'. 
+Return lastname, and firstname and display the result in ascending order on firstname and descending order on lastname columns.
+
+*/
+--select * from  Person.Person
+
+	 select
+	     lastname,
+		 firstname
+	from 
+	   Person.Person
+	where 
+	    lastname like 'R%'
+	order by 
+	      firstname,
+		  lastname
+
+
+ not done          
+/*
+33. From the following table write a query in SQL to set the result in order by the 
+column TerritoryName when the column CountryRegionName is equal to 'United States' and by CountryRegionName for all other rows.
+
+Sample table: Sales.SalesPerson
+
+*/
+--select * from Sales.SalesPerson
+
+--select *
+--from 
+--   Sales.vSalesPerson
+   
+
+SELECT 
+     BusinessEntityID,
+     LastName, 
+     TerritoryName, 
+      CountryRegionName  
+FROM 
+    Sales.vSalesPerson  
+WHERE  
+    TerritoryName IS NOT NULL  
+ORDER BY 
+      CASE CountryRegionName WHEN 'United States' THEN TerritoryName  
+      ELSE CountryRegionName END;
